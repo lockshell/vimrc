@@ -11,7 +11,8 @@ set encoding=utf-8
 " 关闭兼容模式
 set nocompatible              " required
 
-let mapleader=";"  " 定义快捷键的前缀，即<Leader>
+" 定义快捷键的前缀，即<Leader>
+let mapleader=";"
 
 " 让配置变更立即生效
 " autocmd BufWritePost $MYVIMRC source $MYVIMRC
@@ -32,12 +33,9 @@ set title
 
 " tab缩进
 set tabstop=4  " 设置编辑时制表符占用空格数
-set shiftwidth=4  " 设置格式化时制表符占用空格数
+set shiftwidth=4 " 设置自动缩进长度为4空格
 set softtabstop=4  " 让 vim 把连续数量的空格视为一个制表符
-" 将制表符扩展为空格
-" set expandtab
-
-set autoindent
+set autoindent " 继承前一行的缩进方式，适用于多行注释
 set autoread
 
 set nu  " 开启行号显示
@@ -48,7 +46,7 @@ set ruler  " 显示光标当前位置
 set clipboard=unnamed
 inoremap jj <esc>
 
-" 单行超过121个字符提示
+" 高亮单行超过121个字符提示
 highlight Search term=standout ctermfg=0 ctermbg=11 guifg=Blue guibg=Yellow
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
 match OverLength /\%121v.\+/
@@ -78,7 +76,7 @@ nnoremap <space> za
 " make backspaces more powerfull
 set backspace=indent,eol,start
 
-" Folding based on indentation:
+" Folding based on indentation
 autocmd FileType python set foldmethod=indent
 
 
@@ -89,8 +87,11 @@ autocmd FileType python set foldmethod=indent
 " plug 管理的插件列表必须位于 plug#begin() 和 plug#end() 之间
 call plug#begin('~/.vim/bundle')
 
+" 可以在文档中显示 git 信息
 Plug 'tpope/vim-fugitive' "git wrapper
-Plug 'bling/vim-airline' "better then powerline
+
+" Vim状态栏插件，包括显示行号，列号，文件类型，文件名，以及Git状态
+Plug 'bling/vim-airline'
 set ttimeoutlen=50
 let g:airline_symbols = {}
 let g:airline_left_sep=''
@@ -108,9 +109,20 @@ let g:airline_symbols.paste = 'Þ'
 let g:airline_symbols.whitespace = 'Ξ'
 " let g:airline#extensions#whitespace#enabled = 0
 
+" 自动补全括号的插件，包括小括号，中括号，以及花括号
+Plug 'jiangmiao/auto-pairs'
+" 彩色的括号
+Plug 'luochen1990/rainbow'
+let g:rainbow_active = 1
+
+" 用来提供一个导航目录的侧边栏
 Plug 'scrooloose/nerdtree' "filesystem plugin
 
+" 可以使 nerdtree Tab 标签的名称更友好些
 Plug 'jistr/vim-nerdtree-tabs'
+
+" 可以在导航目录中看到 git 版本信息
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
 Plug 'kien/ctrlp.vim' " ctrl-p into file find mode
 let g:ctrlp_map = '<c-p>'
@@ -136,19 +148,19 @@ inoremap Ft <Esc>:CtrlSFToggle<CR>
 Plug 'junegunn/fzf'
 " Customize fzf colors to match your color scheme
 let g:fzf_colors =
-\ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
+			\ { 'fg':      ['fg', 'Normal'],
+			\ 'bg':      ['bg', 'Normal'],
+			\ 'hl':      ['fg', 'Comment'],
+			\ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+			\ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+			\ 'hl+':     ['fg', 'Statement'],
+			\ 'info':    ['fg', 'PreProc'],
+			\ 'border':  ['fg', 'Ignore'],
+			\ 'prompt':  ['fg', 'Conditional'],
+			\ 'pointer': ['fg', 'Exception'],
+			\ 'marker':  ['fg', 'Keyword'],
+			\ 'spinner': ['fg', 'Label'],
+			\ 'header':  ['fg', 'Comment'] }
 
 Plug 'haya14busa/incsearch.vim'
 let g:incsearch#auto_nohlsearch = 1
@@ -212,12 +224,12 @@ Plug 'vim-scripts/winmanager'
 let g:AutoOpenWinManager = 1
 let g:NERDTree_title="[NERDTree]"  
 let g:winManagerWindowLayout="NERDTree|TagList"  
-  
+
 function! NERDTree_Start()  
-    exec 'NERDTree'  
+	exec 'NERDTree'  
 endfunction  
 function! NERDTree_IsValid()  
-    return 1  
+	return 1  
 endfunction  
 nmap wm :WMToggle<CR> 
 
@@ -241,20 +253,14 @@ Plug 'acarapetis/vim-colors-github'
 " colorscheme one
 Plug 'rakr/vim-one'
 
-
 " go 主要插件
 Plug 'fatih/vim-go', { 'tag': '*' }
 " go 中的代码追踪，输入 gd 就可以自动跳转
 Plug 'dgryski/vim-godef'
 
-
 " markdown 插件
 Plug 'iamcco/mathjax-support-for-mkdp'
 Plug 'iamcco/markdown-preview.vim'
-
-
-Plug 'luochen1990/rainbow' "colorful ()
-let g:rainbow_active = 1
 
 " Plug 'vim-scripts/c.vim'
 
@@ -321,6 +327,25 @@ let NERDTreeShowBookmarks=2
 let g:nerdtree_tabs_open_on_console_startup=1
 
 
+"==============================================================================
+"  nerdtree-git-plugin 插件
+"==============================================================================
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+
+let g:NERDTreeShowIgnoredStatus = 1
+
+
 if exists('$TMUX')
-   set term=screen-256color
+	set term=screen-256color
 endif
