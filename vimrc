@@ -8,10 +8,13 @@ set termencoding=utf-8
 set fileformats=unix
 set encoding=utf-8
 
+" 关闭兼容模式
+set nocompatible              " required
+
 let mapleader=";"  " 定义快捷键的前缀，即<Leader>
 
 " 让配置变更立即生效
-autocmd BufWritePost $MYVIMRC source $MYVIMRC
+" autocmd BufWritePost $MYVIMRC source $MYVIMRC
 
 set hlsearch  " 搜索高亮
 set incsearch  " 开启实时搜索功能
@@ -24,9 +27,10 @@ set nobackup
 set hidden
 set showcmd
 set showmode
+set showmatch " 显示括号匹配
 set title
-set t_Co=256
 
+" tab缩进
 set tabstop=4  " 设置编辑时制表符占用空格数
 set shiftwidth=4  " 设置格式化时制表符占用空格数
 set softtabstop=4  " 让 vim 把连续数量的空格视为一个制表符
@@ -49,9 +53,9 @@ highlight Search term=standout ctermfg=0 ctermbg=11 guifg=Blue guibg=Yellow
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
 match OverLength /\%121v.\+/
 
-syntax enable  " 开启语法高亮功能
 syntax on  " 允许用指定语法高亮配色方案替换默认方案
 filetype on  " 开启文件类型侦测
+syntax enable  " 开启语法高亮功能
 filetype plugin on  " 根据侦测到的不同类型加载对应的插件
 filetype indent on  " 自适应不同语言的智能缩进
 
@@ -78,12 +82,9 @@ set backspace=indent,eol,start
 autocmd FileType python set foldmethod=indent
 
 
-" ---------- Start plug ----------
-set nocompatible              " required
-" filetype off                  " required
-set titlestring=%f
-" set the runtime path to include plug and initialize
-set rtp+=~/.vim/autoload/plug.vim
+"==============================================================================
+" 插件配置
+"==============================================================================
 
 " plug 管理的插件列表必须位于 plug#begin() 和 plug#end() 之间
 call plug#begin('~/.vim/bundle')
@@ -108,11 +109,6 @@ let g:airline_symbols.whitespace = 'Ξ'
 " let g:airline#extensions#whitespace#enabled = 0
 
 Plug 'scrooloose/nerdtree' "filesystem plugin
-" autocmd VimEnter * NERDTree
-nnoremap <silent> <F2> :NERDTree<CR>
-map <S-m> <plug>NERDTreeTabsToggle<CR>
-let NERDTreeShowBookmarks=1
-let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.obj$', '\.o$', '\.so$', '\.egg$', '^\.git$', '^\.svn$', '^\.hg$', '\.lnk$']
 
 Plug 'jistr/vim-nerdtree-tabs'
 
@@ -234,19 +230,97 @@ Plug 'vim-scripts/indentpython.vim' "auto indent
 Plug 'nvie/vim-flake8' "code style check
 Plug 'w0rp/ale' "syntax check plugin
 
-" Golang plugins
-Plug 'fatih/vim-go'
+
+" 配色方案
+" colorscheme neodark
+Plug 'KeitaNakamura/neodark.vim'
+" colorscheme monokai
+Plug 'crusoexia/vim-monokai'
+" colorscheme github
+Plug 'acarapetis/vim-colors-github'
+" colorscheme one
+Plug 'rakr/vim-one'
+
+
+" go 主要插件
+Plug 'fatih/vim-go', { 'tag': '*' }
+" go 中的代码追踪，输入 gd 就可以自动跳转
+Plug 'dgryski/vim-godef'
+
+
+" markdown 插件
+Plug 'iamcco/mathjax-support-for-mkdp'
+Plug 'iamcco/markdown-preview.vim'
+
 
 Plug 'luochen1990/rainbow' "colorful ()
 let g:rainbow_active = 1
 
 " Plug 'vim-scripts/c.vim'
 
-" All of your Plugs must be added before the following line
-call plug#end()            " required
-filetype plugin indent on    " required
-" ---------- Stop plug ----------
-"
+" 插件结束的位置，插件全部放在此行上面
+call plug#end() 
+
+
+"==============================================================================
+" 主题配色
+"==============================================================================
+
+" 开启24bit的颜色，开启这个颜色会更漂亮一些
+set termguicolors
+" 配色方案, 可以从上面插件安装中的选择一个使用
+colorscheme molokai
+" colorscheme one " 主题
+let g:molokai_original = 1
+let g:rehash256 = 1
+
+set background=dark " 主题背景 dark-深色; light-浅色
+
+
+"==============================================================================
+" vim-go 插件
+"==============================================================================
+let g:go_fmt_command = "goimports" " 格式化将默认的 gofmt 替换
+let g:go_autodetect_gopath = 1
+let g:go_list_type = "quickfix"
+
+let g:go_version_warning = 1
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_generate_tags = 1
+
+let g:godef_split=2
+
+"==============================================================================
+" NERDTree 插件
+"==============================================================================
+
+" 打开和关闭NERDTree快捷键
+map <F10> :NERDTreeToggle<CR>
+nnoremap <silent> <F2> :NERDTree<CR>
+map <S-m> <plug>NERDTreeTabsToggle<CR>
+
+" 显示行号
+let NERDTreeShowLineNumbers=1
+" 打开文件时是否显示目录
+let NERDTreeAutoCenter=1
+" 是否显示隐藏文件
+let NERDTreeShowHidden=0
+" 设置宽度
+" let NERDTreeWinSize=31
+" 忽略一下文件的显示
+let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.obj$', '\.o$', '\.so$', '\.egg$', '^\.git$', '^\.swp$', '^\.hg$', '\.lnk$']
+" 打开 vim 文件及显示书签列表
+let NERDTreeShowBookmarks=2
+" 在终端启动vim时，共享NERDTree
+let g:nerdtree_tabs_open_on_console_startup=1
+
+
 if exists('$TMUX')
    set term=screen-256color
 endif
